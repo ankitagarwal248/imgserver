@@ -1,0 +1,1 @@
+celery -A imgserver_project worker -l info

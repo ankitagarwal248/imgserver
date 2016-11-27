@@ -1,0 +1,65 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Info</title>
+</head>
+<body>
+
+<form id="productform" enctype="multipart/form-data" method="post" action="/product_info_image/">
+    <input type="text" id="pid" name="pid" value="123456789"><br>
+    <input type="text" id="name" name="name" placeholder="Name"><br>
+    <input type="text" id="price" name="price" placeholder="Price"><br>
+    <input type="file" id="image" name="pic">
+    <input type="submit">
+</form>
+
+<script type="text/javascript" src="{% static "master/js/jquery.min.js" %}"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#productform").submit(function(e) {
+            e.preventDefault();
+            var pid = $('#pid').val();
+            var name = $('#name').val();
+            var price = $('#price').val();
+            var file = $('#image').get(0).files[0];
+
+            var formData = new FormData();
+            formData.append('img', file);
+            formData.append('pid', pid);
+            $.ajax({
+                type: "POST",
+                url: "/product_info_image/",
+                enctype: 'multipart/form-data',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    console.log("image uploaded");
+                }
+            });
+
+            var formDataDetails = new FormData();
+            formDataDetails.append('pid', pid);
+            formDataDetails.append('name', name);
+            formDataDetails.append('price', price);
+            $.ajax({
+                type: "POST",
+                url: "/product_info_details/",
+                data: formDataDetails,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    console.log("product details sent");
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>
