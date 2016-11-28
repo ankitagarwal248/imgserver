@@ -28,3 +28,11 @@ def get_redis_image(pid):
     stream = StringIO.StringIO(ri)
     img = Image.open(stream)
     return img
+
+
+def delete_redis_images():
+    pass
+
+
+def bgtasks(pid):
+    delete_redis_images()
