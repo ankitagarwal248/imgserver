@@ -30,8 +30,7 @@ def product_info_image(request):
     output.close()
 
     # asynchronously (using celery) resizing uploaded image and storing it in db
-    tasks.imageupload256.delay(pid)
-    tasks.imageupload512.delay(pid)
+    tasks.imageupload.delay(pid)
 
     return HttpResponse(json.dumps({"status": "success"}))
 
@@ -42,24 +41,30 @@ def product_info_details(request):
     name = request.POST.get("name")
     price = request.POST.get("price")
 
-    # store product details in db
+    product = Product.objects.get(id=pid)
+    product.name = name
+    product.price = price
+    product.save()
 
     return HttpResponse(json.dumps({"status": "success"}))
 
 
+# product fetch API
 @csrf_exempt
 def fetch_product_details(request):
-    pid = request.GET.get("pid")
-    product = Product.objects.get(id=pid)
+    products = Product.objects.all()
 
-    data = {
-        'id': product.id,
-        'name': product.name,
-        'price': product.price,
-        'image': product.image,
-        'image256': product.image256,
-        'image512': product.image512
-    }
+    data = []
+    for product in products:
+        pdata = {
+            'id': product.id,
+            'name': product.name,
+            'price': product.price,
+            'image': json.loads(product.image),
+            'image256': json.loads(product.image256),
+            'image512': json.loads(product.image512)
+        }
+        data.append(pdata)
 
-    data = json.dumps(data)
+    data = json.dumps({'products': data})
     return HttpResponse(data)

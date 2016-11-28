@@ -1,23 +1,34 @@
 import PIL
-from celery import shared_task,current_task
+from celery import shared_task
 import StringIO
 from PIL import Image
 import redis
+from master.models import *
+import json
 
 
 @shared_task
-def imageupload256(pid):
+def imageupload(pid):
     img = get_redis_image(pid)
-    img = img.resize((256, 256), PIL.Image.ANTIALIAS)
+    img_width, img_height = img.size
+    size = str(img_width) + 'x' + str(img_height)
+
+    img256 = img.resize((256, 256), PIL.Image.ANTIALIAS)
+    img512 = img.resize((512, 512), PIL.Image.ANTIALIAS)
+
+    # save images on aws bucket
+
+    image_data = {'url': 'http://aws.com/dsd', 'size': size}
+    image256_data = {'url': 'http://aws.com/dsd', 'size': '256x256'}
+    image512_data = {'url': 'http://aws.com/dsd', 'size': '512x512'}
+
+    product = Product.objects.get(id=pid)
+    product.image = json.dumps(image_data)
+    product.image256 = json.dumps(image256_data)
+    product.image512 = json.dumps(image512_data)
+    product.save()
+
     img.save('some256.png')
-    return True
-
-
-@shared_task
-def imageupload512(pid):
-    img = get_redis_image(pid)
-    img = img.resize((512, 512), PIL.Image.ANTIALIAS)
-    img.save('some512.png')
     return True
 
 
