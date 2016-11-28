@@ -1,1 +1,6 @@
+# run celery server
 celery -A imgserver_project worker -l info
+
+## APIs
+http://localhost:8000/product_info/
+http://localhost:8000/fetch_product_details/
