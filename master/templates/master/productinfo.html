@@ -47,16 +47,16 @@
             formDataDetails.append('pid', pid);
             formDataDetails.append('name', name);
             formDataDetails.append('price', price);
-            $.ajax({
-                type: "POST",
-                url: "/product_info_details/",
-                data: formDataDetails,
-                processData: false,
-                contentType: false,
-                success: function () {
-                    console.log("product details sent");
-                }
-            });
+{#            $.ajax({#}
+{#                type: "POST",#}
+{#                url: "/product_info_details/",#}
+{#                data: formDataDetails,#}
+{#                processData: false,#}
+{#                contentType: false,#}
+{#                success: function () {#}
+{#                    console.log("product details sent");#}
+{#                }#}
+{#            });#}
         });
     });
 

@@ -1,0 +1,15 @@
+amqp==2.1.4
+Babel==2.3.4
+backports.ssl-match-hostname==3.5.0.1
+billiard==3.5.0.2
+celery==4.0.2
+certifi==2016.9.26
+Django==1.10.4
+flower==0.9.1
+futures==3.0.5
+kombu==4.0.2
+Pillow==3.4.2
+pytz==2016.10
+redis==2.10.5
+tornado==4.2
+vine==1.1.3

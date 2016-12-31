@@ -30,8 +30,8 @@ def product_info_image(request):
     output.close()
 
     # asynchronously (using celery) resizing uploaded image and storing it in db
-    tasks.imageupload.delay(pid)
-
+    # tasks.imageupload.delay(pid)
+    tasks.imageupload(pid)
     return HttpResponse(json.dumps({"status": "success"}))
 
 
