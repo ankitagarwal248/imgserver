@@ -66,3 +66,14 @@ def dummy_data(x, y):
     return "The multiple is: " + str(x*y)
 
 
+@shared_task
+def sc_task():
+    x = y = 1
+    print x+y
+    f = open("guru99.txt", "a")
+    f.write("This is line\n")
+    f.close()
+    return "scheduled task: sum: " + str(x+y)
+
+
+

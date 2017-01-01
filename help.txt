@@ -4,3 +4,96 @@ celery -A imgserver_project worker -l info
 ## APIs
 http://localhost:8000/product_info/
 http://localhost:8000/fetch_product_details/
+
+Celery
+https://www.digitalocean.com/community/tutorials/how-to-use-celery-with-rabbitmq-to-queue-tasks-on-an-ubuntu-vps
+https://tests4geeks.com/python-celery-rabbitmq-tutorial/
+
+Defaults:
+2. one queue names ‘celery’
+3. 1 worker with concurrency 4(prefork)
+
+# install redis or rabbitmq as a celery broker
+
+
+---- RabbitMq ----
+$ brew install rabbitmq
+# if you are using Ubuntu or Debian, try:
+# $ sudo apt-get install rabbitmq-server
+#homebrew add the rabbitmq-server bash script in /usr/local/sbin
+# start the rabbit server by - # go to the sbin directory(/usr/local/sbin) —>$sh rabbitmq-server
+# add this path to terminal to start it from anywhere by:
+1. $ cd —> go to the home directory
+2. $ nano .bash_profile —> an editor will open the terminal
+3. add the line —> PATH=$PATH:/usr/local/sbin
+4. save the file (ctrl+x)
+5. $ rabbitmq-server—> to start the server
+6. $ brew services start rabbitmq —> to run the server every time on login
+
+
+$ rabbitmqctl add_user jimmy jimmy123
+# add virtual host 'jimmy_vhost'
+$ rabbitmqctl add_vhost jimmy_vhost
+# add user tag 'jimmy_tag' for user 'jimmy'
+$ rabbitmqctl set_user_tags jimmy jimmy_tag
+# set permission for user 'jimmy' on virtual host 'jimmy_vhost'
+$ rabbitmqctl set_permissions -p jimmy_vhost jimmy ".*" ".*" ".*"
+$ rabbitmq-plugins enable rabbitmq_management
+$ restart rabbitmq server
+WEBUI for rabbitmq —> http://server-name:15672/
+username: guest, password: guest
+
+
+
+---- REDIS ----
+https://medium.com/@petehouston/install-and-config-redis-on-mac-os-x-via-homebrew-eb8df9a4f298#.z8a4nv6q5
+$brew install redis
+$redis-server /usr/local/etc/redis.conf
+
+
+
+
+---- Celery ----
+
+$ pip install celery
+
+to start celery
+$celery -A imgserver_project worker -l info
+$celery -A imgserver_project worker --loglevel=info
+$celery -A imgserver_project worker -Q feeds --concurrency=1 --loglevel=info
+$celery -A imgserver_project worker -Q feeds,filter --concurrency=4 --loglevel=info
+
+# http://www.revsys.com/12days/async-workers-celery/
+# to setup three processes to handle tasks (assuming worker server has 4 cores, three queues, high, normal and low)
+$ celery -A tasks worker -Q high --concurrency=2
+$ celery -A tasks worker -Q normal --concurrency=1
+$ celery -A tasks worker -Q low,normal --concurrency=1
+
+$ celery -A imgserver_project worker -n workerA -Q feeds,filter --concurrency=4 --loglevel=info
+$ celery -A imgserver_project worker -n workerB -Q feeds --concurrency=4 --loglevel=info
+
+
+#defining task routes, queus will be automatically created
+app.conf.task_routes = { 
+    'master.tasks.dummy_task': {'queue': 'feeds'}, 
+    'master.tasks.dummmy_data': {'queue': 'filter'} 
+}
+
+# Broker UI
+
+$ pip install flower
+celery -A test_celery flower —> to start flower server
+http://localhost:5555
+
+# if using rabbitmq
+$ rabbitmq-plugins enable rabbitmq_management
+$ restart rabbitmq server
+
+
+ ---- Scheduled Tasks ----
+# define tasks and schedule in celery file
+# first start a worker without a queue
+$celery -A imgserver_project worker -n workerA --concurrency=4 --loglevel=info
+
+# then start celery beat process
+$celery -A imgserver_project beat -l info
